@@ -1,0 +1,58 @@
+Metadata-Version: 2.1
+Name: mondrian
+Version: 0.8.1
+Summary: Mondrian helps you to configure and use python's logging module once and for ever.
+Home-page: https://python-mondrian.github.io/
+Author: Romain Dorgueil
+Author-email: romain@dorgueil.net
+License: Apache License, Version 2.0
+Download-URL: https://github.com/python-mondrian/mondrian/archive/0.8.1.tar.gz
+Platform: UNKNOWN
+Requires-Dist: colorama (<0.5,>=0.3.7)
+Provides-Extra: dev
+Requires-Dist: coverage (~=4.5) ; extra == 'dev'
+Requires-Dist: isort ; extra == 'dev'
+Requires-Dist: pre-commit (~=2.9.2) ; extra == 'dev'
+Requires-Dist: pytest (~=4.6) ; extra == 'dev'
+Requires-Dist: pytest-cov (~=2.7) ; extra == 'dev'
+Requires-Dist: sphinx (~=1.7) ; extra == 'dev'
+
+mondrian
+========
+
+.. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fpython-mondrian%2Fmondrian.svg?type=shield
+    :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fpython-mondrian%2Fmondrian?ref=badge_shield
+    :alt: License Status
+
+Mondrian helps you paint your standard python logger.
+
+.. image:: https://raw.githubusercontent.com/hartym/mondrian/master/demo.png
+  :alt: Mondrian in action
+  :width: 100%
+  :align: center
+
+Enabling mondrian is simple and straightforward:
+
+.. code-block:: python
+
+    import logging
+    import mondrian
+
+    logger = logging.getLogger()
+
+    if __name__ == '__main__':
+        mondrian.setup(excepthook=True)
+        logger.setLevel(logging.INFO)
+
+        logger.info('Hello, world.')
+
+
+License
+=======
+
+.. image:: https://app.fossa.io/api/projects/git%2Bgithub.com%2Fpython-mondrian%2Fmondrian.svg?type=large
+    :target: https://app.fossa.io/projects/git%2Bgithub.com%2Fpython-mondrian%2Fmondrian?ref=badge_large
+    :alt: License Status
+
+
+
