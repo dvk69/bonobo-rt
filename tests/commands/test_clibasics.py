@@ -1,13 +1,10 @@
-import pkg_resources
+from importlib.metadata import entry_points
 
 from bonobo.util.testing import all_runners
 
 
 def test_entrypoint():
-    commands = {}
-
-    for command in pkg_resources.iter_entry_points("bonobo.commands"):
-        commands[command.name] = command
+    commands = {ep.name: ep for ep in entry_points(group="bonobo.commands")}
 
     assert not {"convert", "init", "inspect", "run", "version"}.difference(set(commands))
 
