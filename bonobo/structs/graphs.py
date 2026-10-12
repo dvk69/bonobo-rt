@@ -3,8 +3,7 @@ import json
 from collections import namedtuple
 from copy import copy
 
-from graphviz import ExecutableNotFound
-from graphviz.dot import Digraph
+from graphviz import Digraph, ExecutableNotFound
 
 from bonobo.constants import BEGIN
 from bonobo.util import get_name

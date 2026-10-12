@@ -4,8 +4,6 @@ import logging
 import sys
 from concurrent.futures import Executor, ProcessPoolExecutor, ThreadPoolExecutor
 
-from cached_property import cached_property
-
 from bonobo import settings
 from bonobo.constants import BEGIN, END
 from bonobo.execution.contexts.graph import AsyncGraphExecutionContext
@@ -91,7 +89,7 @@ class AsyncThreadPoolExecutorStrategy(ThreadPoolExecutorStrategy):
             )
         super().__init__(GraphExecutionContextType)
 
-    @cached_property
+    @functools.cached_property
     def loop(self):
         return asyncio.get_event_loop()
 
