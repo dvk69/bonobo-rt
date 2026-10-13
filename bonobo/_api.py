@@ -9,6 +9,10 @@ All objects in this module are considered very safe to use, and backward compati
 to another is maximal.
 
 """
+from bonobo.util._pkg_resources_shim import ensure_pkg_resources_shim
+
+ensure_pkg_resources_shim()  # no-op unless pkg_resources is truly missing
+
 from bonobo.execution.strategies import create_strategy
 from bonobo.nodes import *
 from bonobo.nodes import __all__ as _all_nodes
