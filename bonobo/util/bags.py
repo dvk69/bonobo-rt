@@ -8,7 +8,6 @@ from slugify import slugify
 _class_template = '''\
 from builtins import property as _property, tuple as _tuple
 from operator import itemgetter as _itemgetter
-from collections import OrderedDict
 
 class {typename}(tuple):
     '{typename}({arg_list})'
@@ -63,10 +62,10 @@ class {typename}(tuple):
         
     def _asdict(self):
         """
-        Return a new OrderedDict which maps field names to their values.
+        Return a new dict which maps field names to their values.
         
         """
-        return OrderedDict(zip(self._fields, self))
+        return dict(zip(self._fields, self))
         
 {field_defs}
 '''

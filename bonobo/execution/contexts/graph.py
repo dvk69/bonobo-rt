@@ -128,6 +128,13 @@ class GraphExecutionContext(BaseGraphExecutionContext):
 
         self.dispatch(events.STOP)
         for node_context in self.nodes:
+            if not node_context.started:
+                # A node that was submitted to the thread pool but whose
+                # worker thread never ran has no resources to tear down.
+                # Skipping it here preserves the Lifecycle contract
+                # (stop() on an unstarted context raises RuntimeError)
+                # while avoiding the race on Python 3.12+.
+                continue
             if stopper is None:
                 node_context.stop()
             else:

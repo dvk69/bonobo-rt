@@ -26,6 +26,5 @@ jobs:
       - name: Install
         run: pip install -e ".[dev]"
 
-      # TODO(Slice 2): re-enable tests/commands/test_run_environ.py after the executor race fix — see TUTORIAL.md failure log
       - name: Test
-        run: pytest -q --deselect tests/commands/test_run_environ.py
+        run: pytest -q

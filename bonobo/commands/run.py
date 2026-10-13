@@ -58,13 +58,15 @@ def register_generic_run_arguments(parser, required=True):
 def _install_requirements(requirements):
     """Install requirements given a path to requirements.txt file."""
     import importlib
-    import pip
+    import subprocess
+    import sys
 
-    pip.main(["install", "-r", requirements])
-    # Some shenanigans to be sure everything is importable after this, especially .egg-link files which
-    # are referenced in *.pth files and apparently loaded by site.py at some magic bootstrap moment of the
-    # python interpreter.
-    pip.utils.pkg_resources = importlib.reload(pip.utils.pkg_resources)
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-r", requirements],
+        check=True,
+    )
+    # Reload site so that newly installed .pth files (including .egg-link
+    # files from editable installs) are picked up in the current process.
     import site
 
     importlib.reload(site)

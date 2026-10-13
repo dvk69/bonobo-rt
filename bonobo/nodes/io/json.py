@@ -1,5 +1,4 @@
 import json
-from collections import OrderedDict
 
 from bonobo.config import Method
 from bonobo.config.processors import ContextProcessor, use_context
@@ -63,7 +62,7 @@ class JsonWriter(JsonHandler, FileWriter):
 
         if fields:
             prefix = self.eol if context.lineno else ""
-            self._write_line(file, prefix + json.dumps(OrderedDict(zip(fields, args))))
+            self._write_line(file, prefix + json.dumps(dict(zip(fields, args))))
             context.lineno += 1
         else:
             for arg in args:

@@ -2,7 +2,7 @@ import asyncio
 import functools
 import logging
 import sys
-from concurrent.futures import Executor, ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import Executor, ProcessPoolExecutor, ThreadPoolExecutor, wait as futures_wait
 
 from bonobo import settings
 from bonobo.constants import BEGIN, END
@@ -45,6 +45,13 @@ class ExecutorStrategy(Strategy):
                     )
                     context.kill()
                     break
+
+            # Wait for all worker threads to finish before stopping the graph
+            # context. Without this, a thread that was scheduled but hasn't run
+            # yet could be mid-start() when stop() fires, causing
+            # "context cannot be stopped as it never started" on Python 3.12+.
+            if futures:
+                futures_wait(futures)
 
             context.stop()
 
