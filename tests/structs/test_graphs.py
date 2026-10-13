@@ -157,3 +157,54 @@ def test_copy():
 
     assert len(g1) == 1
     assert len(g2) == 2
+
+
+# ---------------------------------------------------------------------------
+# graphviz 0.20+ output tests (2c)
+# ---------------------------------------------------------------------------
+
+
+def test_repr_dot_contains_begin_and_nodes():
+    """_repr_dot_() returns valid DOT source with BEGIN and node labels."""
+    g = Graph(identity)
+    dot = g._repr_dot_()
+    assert "digraph" in dot
+    assert "BEGIN" in dot
+    # node 0 should appear
+    assert "0" in dot
+
+
+def test_repr_dot_multi_node_chain():
+    """Edges between chained nodes appear in the DOT source."""
+    a, b, c = (lambda: None,) * 3  # three distinct lambdas
+    a.__name__ = b.__name__ = c.__name__ = "fn"
+    g = Graph()
+    g.add_chain(a, b, c)
+    dot = g._repr_dot_()
+    # There are 3 nodes so indexes 0,1,2 should all appear
+    for idx in ("0", "1", "2"):
+        assert idx in dot
+
+
+def test_repr_html_no_dot_installed(monkeypatch):
+    """_repr_html_() returns an error <strong> block when graphviz dot is absent."""
+    from graphviz import ExecutableNotFound
+
+    g = Graph(identity)
+
+    # Make _repr_image_svg_xml raise as it would when 'dot' is not on PATH
+    monkeypatch.setattr(type(g.graphviz), "_repr_image_svg_xml", lambda self: (_ for _ in ()).throw(ExecutableNotFound("dot")))
+
+    html = g._repr_html_()
+    assert html.startswith("<strong>ExecutableNotFound</strong>")
+
+
+def test_repr_html_success(monkeypatch):
+    """_repr_html_() wraps SVG in <div> and appends a <pre> repr when dot succeeds."""
+    g = Graph(identity)
+    fake_svg = "<svg>mock</svg>"
+    monkeypatch.setattr(type(g.graphviz), "_repr_image_svg_xml", lambda self: fake_svg)
+
+    html = g._repr_html_()
+    assert html.startswith("<div><svg>mock</svg></div>")
+    assert "<pre>" in html

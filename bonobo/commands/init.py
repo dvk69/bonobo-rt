@@ -25,7 +25,10 @@ class InitCommand(BaseCommand):
             raise ValueError('Filenames should end with ".py".')
 
         loader = FileSystemLoader(self.TEMPLATES_PATH)
-        env = Environment(loader=loader)
+        # autoescape=False: templates produce Python source, not HTML.
+        # keep_trailing_newline=True: preserve the final newline in .py files
+        # (jinja2 strips it by default).
+        env = Environment(loader=loader, autoescape=False, keep_trailing_newline=True)
         template = env.get_template(template_name + ".py-tpl")
 
         with open(filename, "w+") as f:

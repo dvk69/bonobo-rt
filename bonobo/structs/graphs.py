@@ -323,7 +323,7 @@ class Graph:
 
     def _repr_html_(self):
         try:
-            return "<div>{}</div><pre>{}</pre>".format(self.graphviz._repr_svg_(), html.escape(repr(self)))
+            return "<div>{}</div><pre>{}</pre>".format(self.graphviz._repr_image_svg_xml(), html.escape(repr(self)))
         except (ExecutableNotFound, FileNotFoundError) as exc:
             return "<strong>{}</strong>: {}".format(type(exc).__name__, str(exc))
 
