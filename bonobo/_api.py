@@ -148,8 +148,10 @@ def open_fs(fs_url=None, *args, **kwargs):
 api.register_group(
     CsvReader,
     CsvWriter,
+    DataQualityCheck,
     FileReader,
     FileWriter,
+    FileTailReader,
     Filter,
     FixedWindow,
     Format,

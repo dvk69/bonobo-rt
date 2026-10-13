@@ -10,6 +10,8 @@ from bonobo.nodes.basics import __all__ as _all_basics
 from bonobo.nodes.filter import Filter
 from bonobo.nodes.io import *
 from bonobo.nodes.io import __all__ as _all_io
+from bonobo.nodes.quality import DataQualityCheck
+from bonobo.nodes.streaming import FileTailReader
 from bonobo.nodes.throttle import RateLimited
 
-__all__ = _all_basics + _all_io + ["Filter", "RateLimited"]
+__all__ = _all_basics + _all_io + ["DataQualityCheck", "FileTailReader", "Filter", "RateLimited"]

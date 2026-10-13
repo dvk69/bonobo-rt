@@ -103,6 +103,53 @@ class BaseGraphExecutionContext(BaseContext):
 
 
 class GraphExecutionContext(BaseGraphExecutionContext):
+    """Concrete graph execution context.
+
+    **Per-node metrics** are exposed via :meth:`get_metrics`.
+
+    Design
+    ------
+    ``NodeExecutionContext`` (a :class:`~bonobo.util.statistics.WithStatistics`
+    subclass) already maintains atomic-ish ``statistics`` counters for
+    ``"in"``, ``"out"``, ``"err"``, and ``"warn"`` per node.  On CPython these
+    ``+= 1`` operations are effectively atomic due to the GIL; the overhead is
+    a single dict lookup per row, which is negligible compared to the I/O and
+    transformation work in a typical ETL node.
+
+    :meth:`get_metrics` returns a snapshot by iterating over ``self.nodes`` and
+    reading each node's ``statistics`` dict.  It is a read-only view — it does
+    not hold any lock, so a caller racing with live execution may see slightly
+    stale counts, which is acceptable for observability purposes.
+    """
+
+    def get_metrics(self) -> dict:
+        """Return per-node tuple-in / tuple-out / error counters.
+
+        Returns a dict keyed by the node's ``__name__`` (falling back to its
+        repr).  Each value is a dict with keys ``"in"``, ``"out"``, ``"err"``,
+        and ``"warn"``.
+
+        Example::
+
+            ctx = bonobo.run(graph)
+            for node_name, counts in ctx.get_metrics().items():
+                print(node_name, counts)
+            # extract  {'in': 0, 'out': 100, 'err': 0, 'warn': 0}
+            # transform {'in': 100, 'out': 100, 'err': 0, 'warn': 0}
+            # load     {'in': 100, 'out': 0,   'err': 0, 'warn': 0}
+        """
+        result = {}
+        for node_ctx in self.nodes:
+            name = node_ctx.__name__
+            # Deduplicate names that appear more than once in the graph.
+            key = name
+            suffix = 2
+            while key in result:
+                key = f"{name}[{suffix}]"
+                suffix += 1
+            result[key] = dict(node_ctx.statistics)
+        return result
+
     def start(self, starter=None):
         super(GraphExecutionContext, self).start()
 

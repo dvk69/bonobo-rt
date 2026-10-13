@@ -12,6 +12,9 @@ means that the api is not yet 1.0-proof.
     api/bonobo/constants
     api/bonobo/execution
     api/bonobo/nodes
+    api/bonobo/nodes/streaming
+    api/bonobo/nodes/quality
+    api/bonobo/metrics
     api/bonobo/structs/graphs
     api/bonobo/util
     commands
