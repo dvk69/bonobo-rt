@@ -17,22 +17,14 @@ or
     $ python -m bonobo.examples.module
 
 
-
-.. toctree::
-    :maxdepth: 4
-
-    examples/tutorials
-
-
 Datasets
 ::::::::
 
 
 .. module:: bonobo.examples.datasets
 
-The :mod:`bonobo.examples.datasets` package contains examples that generates datasets locally for other examples to
-use. As of today, we commit the content of those datasets to git, even if that may be a bad idea, so all the examples
-are easily runnable. Later, we'll see if we favor a "missing dependency exception" approach.
+The :mod:`bonobo.examples.datasets` package contains examples that generate datasets locally for other examples to
+use.
 
 
 Coffeeshops
@@ -46,10 +38,8 @@ Coffeeshops
 Fablabs
 -------
 
-.. automodule:: bonobo.examples.datasets.fablabs
-    :members:
-    :undoc-members:
-    :show-inheritance:
+*Requires optional dependencies — not documented here.*
+
 
 Types
 :::::
@@ -58,7 +48,7 @@ Strings
 -------
 
 .. automodule:: bonobo.examples.types.strings
-    :members: graph, extract, transform, load
+    :members: extract, transform, load
     :undoc-members:
     :show-inheritance:
 
@@ -66,19 +56,13 @@ Strings
 Dicts
 -----
 
-.. automodule:: bonobo.examples.types.dicts
-    :members: graph, extract, transform, load
-    :undoc-members:
-    :show-inheritance:
+*Requires optional dependencies — not documented here.*
 
 
 Bags
 ----
 
-.. automodule:: bonobo.examples.types.bags
-    :members: graph, extract, transform, load
-    :undoc-members:
-    :show-inheritance:
+*Requires optional dependencies — not documented here.*
 
 
 Utils
@@ -87,9 +71,4 @@ Utils
 Count
 -----
 
-.. automodule:: bonobo.examples.nodes.count
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
+*Module not available in this build — not documented here.*

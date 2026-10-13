@@ -1,6 +1,14 @@
 Contributing
 ============
 
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   release
+
+
+
 There's a lot of different ways you can contribute, and not all of them includes coding. Do not think that the codeless
 contributions have less value, all contributions are very important.
 

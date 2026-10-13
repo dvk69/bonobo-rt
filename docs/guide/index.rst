@@ -14,3 +14,4 @@ This section will guide you through your journey with Bonobo ETL.
     purity
     debugging
     plugins
+    packaging

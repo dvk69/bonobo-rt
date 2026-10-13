@@ -9,6 +9,8 @@ Bonobo
    guide/index
    extension/index
    reference/index
+   migrate-0.7-to-0.8
+   history
    faq
    contribute/index
 

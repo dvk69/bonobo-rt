@@ -9,5 +9,12 @@
 .. automodule:: bonobo.execution
 
 
+.. toctree::
+   :maxdepth: 1
+
+   execution/contexts
+   execution/events
+   execution/strategies
+
 
    

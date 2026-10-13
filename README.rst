@@ -16,51 +16,67 @@ Data-processing for humans.
     :target: http://docs.bonobo-project.org/
     :alt: Documentation
 
-.. image:: https://travis-ci.org/python-bonobo/bonobo.svg?branch=master
-    :target: https://travis-ci.org/python-bonobo/bonobo
-    :alt: Continuous Integration (Linux)
+.. image:: https://github.com/python-bonobo/bonobo/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/python-bonobo/bonobo/actions/workflows/ci.yml
+    :alt: CI
 
-.. image:: https://ci.appveyor.com/api/projects/status/github/python-bonobo/bonobo?retina=true&branch=master&svg=true
-    :target: https://ci.appveyor.com/project/hartym/bonobo?branch=master
-    :alt: Continuous Integration (Windows)
+Bonobo is an extract-transform-load framework for **Python 3.10+**.
 
-.. image:: https://codeclimate.com/github/python-bonobo/bonobo/badges/gpa.svg
-   :target: https://codeclimate.com/github/python-bonobo/bonobo
-   :alt: Code Climate
+Bonobo uses plain old python objects (functions, generators and iterators), allows them to be linked together in a
+directed graph, and then executed using a parallelized strategy, without having to worry about the underlying
+complexity.
 
-.. image:: https://img.shields.io/coveralls/python-bonobo/bonobo/master.svg
-    :target: https://coveralls.io/github/python-bonobo/bonobo?branch=master
-    :alt: Coverage
-
-Bonobo is an extract-transform-load framework for python 3.5+ (see comparisons with other data tools).
-
-Bonobo uses plain old python objects (functions, generators and iterators), allows them to be linked together in a directed graph, and then executed using a parallelized strategy, without having to worry about the underlying complexity.
-
-Developers can focus on writing simple and atomic operations, that are easy to unit-test by-design, while the focus of the
-framework is to apply them concurrently to rows of data.
+Developers can focus on writing simple and atomic operations that are easy to unit-test by design, while the
+framework handles applying them concurrently to rows of data.
 
 One thing to note: write pure transformations and you'll be safe.
 
-Bonobo is a young rewrite of an old python2.7 tool that ran millions of transformations per day for years on production.
-Although it may not yet be complete or fully stable (please, allow us to reach 1.0), the basics are there.
+Bonobo is a rewrite of the **rdc.etl** python 2.7 tool that ran millions of transformations per day on production.
 
 ----
 
-*Bonobo is under heavy development, we're doing our best to keep the core as stable as possible while still moving forward. Please allow us to reach 1.0 stability and our sincere apologies for anything we break in the process (feel free to complain on issues, allowing us to correct breakages we did not expect)*
+*Bonobo is under active modernization. Please allow us to reach 1.0 stability and accept our sincere apologies for
+anything we break in the process (feel free to open issues).*
 
 ----
 
-Homepage: https://www.bonobo-project.org/ (`Roadmap <https://www.bonobo-project.org/roadmap>`_)
+Quick start
+:::::::::::
 
-Documentation: http://docs.bonobo-project.org/
+Install:
 
-Contributing guide: http://docs.bonobo-project.org/en/latest/contribute/index.html
+.. code-block:: shell-session
 
-Issues: https://github.com/python-bonobo/bonobo/issues
+    $ pip install --upgrade bonobo
 
-Slack: https://bonobo-slack.herokuapp.com/
+Create a job:
 
-Release announcements: http://eepurl.com/csHFKL
+.. code-block:: shell-session
+
+    $ bonobo init my-etl.py
+
+Run it:
+
+.. code-block:: shell-session
+
+    $ python my-etl.py
+
+See :doc:`docs/install` for editable-install and developer setup instructions.
+
+Requirements
+::::::::::::
+
+- Python **≥ 3.10**
+- See ``pyproject.toml`` for the full dependency list.
+
+Links
+:::::
+
+- Homepage: https://www.bonobo-project.org/
+- Documentation: http://docs.bonobo-project.org/
+- Issues: https://github.com/python-bonobo/bonobo/issues
+- `CHANGELOG <CHANGELOG.md>`_
+- `Modernization plan <MODERNIZATION_PLAN.md>`_
 
 ----
 
@@ -69,5 +85,3 @@ Made with ♥ by `Romain Dorgueil <https://twitter.com/rdorgueil>`_ and `contrib
 .. image:: https://img.shields.io/pypi/l/bonobo.svg
     :target: https://pypi.python.org/pypi/bonobo
     :alt: License
-
-

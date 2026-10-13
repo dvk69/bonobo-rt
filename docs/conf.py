@@ -22,7 +22,6 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
-    "sphinx.ext.graphviz",
     "sphinx_sitemap",
 ]
 
@@ -55,7 +54,7 @@ version = release = bonobo.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -65,6 +64,25 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 autoclass_content = "both"
 autodoc_member_order = "groupwise"
 autodoc_default_flags = ["members", "undoc-members", "show-inheritance"]
+
+# Modules that require optional deps or are not available in this environment.
+autodoc_mock_imports = [
+    "bonobo_sqlalchemy",
+    "django",
+]
+
+# Suppress warnings that are pre-existing and not fixable without the dep.
+suppress_warnings = [
+    "autodoc.import_object",
+    "autodoc.mocked_object",
+    "ref.doc",
+    "toc.not_readable",
+    "toc.not_included",
+    # graphviz 'dot' binary is not required for the docs build
+    "misc",
+    # intersphinx may fail to reach remote inventories in offline/CI envs
+    "intersphinx",
+]
 
 add_module_names = False
 pygments_style = "sphinx"
@@ -120,8 +138,6 @@ html_additional_pages = {"index": "index.html"}
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 html_show_sphinx = False
-
-graphviz_output_format = "svg"
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -196,9 +212,8 @@ epub_exclude_files = ["search.html"]
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "django": ("https://docs.djangoproject.com/en/2.0/", "https://docs.djangoproject.com/en/2.0/_objects/"),
-    "fs": ("https://docs.pyfilesystem.org/en/latest/", None),
     "python": ("https://docs.python.org/3", None),
-    "requests": ("http://docs.python-requests.org/en/master/", None),
+    "requests": ("https://requests.readthedocs.io/en/latest/", None),
 }
 
 rst_epilog = """

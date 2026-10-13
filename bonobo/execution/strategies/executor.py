@@ -95,7 +95,7 @@ class AsyncThreadPoolExecutorStrategy(ThreadPoolExecutorStrategy):
                 )
             )
         super().__init__(GraphExecutionContextType)
-        # TODO(Slice 3): replace with a proper asyncio redesign.
+        # TODO: full async redesign deferred — see MODERNIZATION_PLAN.md Phase 4
         # asyncio.get_event_loop() is deprecated when there is no running loop
         # (Python 3.10+). We create a private loop at construction time instead.
         self._loop = asyncio.new_event_loop()
