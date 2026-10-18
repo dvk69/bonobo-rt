@@ -22,5 +22,5 @@ jobs:
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://bonobo-dashboard.onrender.com' }}
         run: |
           echo "Pinging ${DASHBOARD_URL}/health …"
-          curl --silent --fail --max-time 30 "${DASHBOARD_URL}/health"
+          curl --silent --fail --max-time 120 --retry 3 --retry-delay 15 --retry-all-errors "${DASHBOARD_URL}/health"
           echo "Done."
