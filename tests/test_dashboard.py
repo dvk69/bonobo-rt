@@ -203,3 +203,69 @@ def test_file_append_writer_in_all():
     import bonobo
 
     assert "FileAppendWriter" in bonobo.__all__
+
+
+# ---------------------------------------------------------------------------
+# Demo pipeline: _parse_line + checker produces violations on seed data
+# ---------------------------------------------------------------------------
+
+
+def test_demo_pipeline_violations_fire_on_seed_data():
+    """Processing the seed lines produces a non-empty violations dict.
+
+    Dirty seed rows:
+      - amount=null   → null_empty violation on field 1
+      - amount=""     → null_empty violation on field 1
+      - amount=-9.99  → range[1] violation (outside (0, 10000))
+      - user_id=null  → null_empty violation on field 2
+    """
+    import collections
+    import warnings
+
+    from bonobo.dashboard.app import _SEED_LINES, _parse_line
+    from bonobo.nodes.quality import DataQualityCheck
+    from bonobo.constants import NOT_MODIFIED
+
+    checker = DataQualityCheck(value_ranges={1: (0, 10000)})
+    window = collections.deque(maxlen=1000)
+
+    with warnings.catch_warnings(record=True):
+        warnings.simplefilter("always")
+        for raw_line in _SEED_LINES:
+            for row in _parse_line(raw_line):
+                checker(window, *row)
+
+    counts = checker.get_violation_counts()
+    assert counts, "expected at least one violation from the seed data"
+
+    # null/empty amount (null and "") → null_empty[1]
+    assert counts.get("null_empty[1]", 0) >= 2, f"expected >=2 null_empty[1], got {counts}"
+    # null user_id → null_empty[2]
+    assert counts.get("null_empty[2]", 0) >= 1, f"expected >=1 null_empty[2], got {counts}"
+    # negative amount (-9.99) → range[1]
+    assert counts.get("range[1]", 0) >= 1, f"expected >=1 range[1], got {counts}"
+
+
+def test_parse_line_yields_tuple_from_valid_json():
+    """_parse_line yields a 3-tuple (event, amount, user_id) for valid JSON."""
+    from bonobo.dashboard.app import _parse_line
+
+    results = list(_parse_line('{"event": "order_created", "amount": 42.5, "user_id": 1001}'))
+    assert results == [("order_created", 42.5, 1001)]
+
+
+def test_parse_line_drops_invalid_json():
+    """_parse_line silently drops lines that are not valid JSON."""
+    from bonobo.dashboard.app import _parse_line
+
+    assert list(_parse_line("not json at all")) == []
+    assert list(_parse_line("")) == []
+    assert list(_parse_line("{bad}")) == []
+
+
+def test_parse_line_handles_null_fields():
+    """_parse_line passes None through for null JSON values."""
+    from bonobo.dashboard.app import _parse_line
+
+    results = list(_parse_line('{"event": "order_created", "amount": null, "user_id": null}'))
+    assert results == [("order_created", None, None)]

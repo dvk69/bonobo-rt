@@ -88,6 +88,23 @@ def _append_loop(path: str, stop_event: threading.Event) -> None:
         i += 1
 
 
+def _parse_line(line: str):
+    """Parse a JSON log line into an (event, amount, user_id) tuple.
+
+    Unparseable lines are silently dropped (generator yields nothing),
+    so a malformed row never crashes the pipeline.
+    """
+    try:
+        obj = json.loads(line)
+    except (json.JSONDecodeError, TypeError):
+        return  # drop unparseable lines
+    yield (
+        obj.get("event", ""),
+        obj.get("amount"),
+        obj.get("user_id"),
+    )
+
+
 def start_demo_pipeline() -> None:
     """Initialise the demo graph and start it in background threads.
 
@@ -113,10 +130,16 @@ def start_demo_pipeline() -> None:
         # Seed the input file before the reader seeks to EOF.
         _seed_input_file(_input_path)
 
-        checker = DataQualityCheck()
+        checker = DataQualityCheck(
+            # Negative amounts (e.g. -9.99) violate this range.
+            # Null/empty amounts and null user_ids are caught by the built-in
+            # null/empty check on all fields.
+            value_ranges={1: (0, 10000)},
+        )
 
         graph = Graph(
             FileTailReader(_input_path, poll_interval=0.25),
+            _parse_line,
             checker,
             FileAppendWriter(_output_path),
         )
