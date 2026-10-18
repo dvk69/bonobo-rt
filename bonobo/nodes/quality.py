@@ -146,7 +146,7 @@ class DataQualityCheck(Configurable):
                 idx = field_name if isinstance(field_name, int) else None
                 if idx is not None and 0 <= idx < len(args):
                     val = args[idx]
-                    if val is not None and not (lo <= val <= hi):
+                    if val is not None and isinstance(val, (int, float)) and not (lo <= val <= hi):
                         self._record_violation(
                             f"range[{field_name}]",
                             field_name,

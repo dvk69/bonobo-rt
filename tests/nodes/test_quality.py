@@ -286,3 +286,31 @@ def test_get_violation_counts_returns_copy():
     snapshot["null_empty[0]"] = 9999  # mutate the copy
 
     assert node.get_violation_counts()["null_empty[0]"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Regression: type+range conflict on the same field must not raise TypeError
+# ---------------------------------------------------------------------------
+
+
+def test_range_check_skips_non_numeric_values():
+    """Range check is skipped for non-numeric values (no TypeError raised)."""
+    import collections
+
+    node = DataQualityCheck(field_types={1: int}, value_ranges={1: (0, 120)})
+    window = collections.deque(maxlen=1000)
+
+    # ("carol", "abc"): field 1 is "abc" — wrong type AND non-numeric.
+    # Must not raise, must return NOT_MODIFIED, must count only the type
+    # violation (not a range violation).
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        result = node(window, "carol", "abc")
+
+    from bonobo.constants import NOT_MODIFIED
+
+    assert result is NOT_MODIFIED
+
+    counts = node.get_violation_counts()
+    assert counts.get("type[1]", 0) == 1
+    assert counts.get("range[1]", 0) == 0
