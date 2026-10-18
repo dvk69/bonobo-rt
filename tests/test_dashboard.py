@@ -95,6 +95,21 @@ def test_dashboard_contains_pipeline_title():
     assert "Bonobo" in body
 
 
+def test_dashboard_html_has_no_doubled_braces():
+    """Served HTML must not contain {{ or }} (doubled-brace artifacts)."""
+    client = _get_client()
+    body = client.get("/").text
+    assert "{{" not in body, "found '{{' in served HTML — doubled braces not replaced"
+    assert "}}" not in body, "found '}}' in served HTML — doubled braces not replaced"
+
+
+def test_dashboard_html_has_valid_eventsource():
+    """Served HTML must contain new EventSource('/events') with single braces."""
+    client = _get_client()
+    body = client.get("/").text
+    assert "new EventSource('/events')" in body
+
+
 # ---------------------------------------------------------------------------
 # SSE /events endpoint — test the generator directly to avoid streaming hang
 # ---------------------------------------------------------------------------

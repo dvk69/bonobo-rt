@@ -268,8 +268,8 @@ _DASHBOARD_HTML_TEMPLATE = """\
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bonobo Live Dashboard</title>
   <style>
-    *, *::before, *::after {{ box-sizing: border-box; }}
-    body {{
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
       margin: 0;
       padding: 0;
       font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
@@ -277,51 +277,51 @@ _DASHBOARD_HTML_TEMPLATE = """\
       line-height: 1.6;
       background: #f7f8fa;
       color: #1f2328;
-    }}
-    header {{
+    }
+    header {
       background: #1f2328;
       color: #fff;
       padding: 12px 24px;
       display: flex;
       align-items: center;
       gap: 12px;
-    }}
-    header h1 {{ margin: 0; font-size: 18px; font-weight: 600; }}
-    #status {{
+    }
+    header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+    #status {
       margin-left: auto;
       font-size: 12px;
       padding: 3px 8px;
       border-radius: 12px;
       background: #57606a;
       color: #fff;
-    }}
-    #status.connected {{ background: #1a7f37; }}
-    #status.error {{ background: #cf222e; }}
-    main {{
+    }
+    #status.connected { background: #1a7f37; }
+    #status.error { background: #cf222e; }
+    main {
       max-width: 860px;
       margin: 24px auto;
       padding: 0 16px;
-    }}
-    h2 {{
+    }
+    h2 {
       font-size: 15px;
       font-weight: 600;
       margin: 0 0 12px;
       color: #57606a;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-    }}
-    #grid {{
+    }
+    #grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 16px;
-    }}
-    .card {{
+    }
+    .card {
       background: #fff;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       padding: 16px;
-    }}
-    .card-title {{
+    }
+    .card-title {
       font-weight: 600;
       font-size: 13px;
       margin-bottom: 10px;
@@ -329,40 +329,40 @@ _DASHBOARD_HTML_TEMPLATE = """\
       overflow: hidden;
       text-overflow: ellipsis;
       color: #3b82d4;
-    }}
-    .counters {{
+    }
+    .counters {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 6px;
-    }}
-    .counter {{
+    }
+    .counter {
       display: flex;
       flex-direction: column;
-    }}
-    .counter-label {{
+    }
+    .counter-label {
       font-size: 11px;
       color: #57606a;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-    }}
-    .counter-value {{
+    }
+    .counter-value {
       font-size: 22px;
       font-weight: 700;
       color: #1f2328;
-    }}
-    .counter-value.err  {{ color: #cf222e; }}
-    .counter-value.warn {{ color: #bf8700; }}
-    .violations {{
+    }
+    .counter-value.err  { color: #cf222e; }
+    .counter-value.warn { color: #bf8700; }
+    .violations {
       margin-top: 10px;
       border-top: 1px solid #e5e7eb;
       padding-top: 8px;
       font-size: 12px;
-    }}
-    .violations summary {{
+    }
+    .violations summary {
       cursor: pointer;
       color: #57606a;
-    }}
-    .violations pre {{
+    }
+    .violations pre {
       margin: 6px 0 0;
       background: #f7f8fa;
       padding: 6px 8px;
@@ -370,21 +370,21 @@ _DASHBOARD_HTML_TEMPLATE = """\
       overflow: auto;
       max-height: 120px;
       font-size: 11px;
-    }}
-    #last-update {{
+    }
+    #last-update {
       font-size: 12px;
       color: #57606a;
       margin-top: 16px;
       text-align: right;
-    }}
-    footer {{
+    }
+    footer {
       margin-top: 48px;
       padding: 16px;
       text-align: center;
       font-size: 12px;
       color: #57606a;
       border-top: 1px solid #e5e7eb;
-    }}
+    }
   </style>
 </head>
 <body>
@@ -404,67 +404,67 @@ _DASHBOARD_HTML_TEMPLATE = """\
     const statusEl = document.getElementById('status');
     const lastUpdate = document.getElementById('last-update');
 
-    function fmt(n) {{ return (n == null) ? '—' : n; }}
+    function fmt(n) { return (n == null) ? '\u2014' : n; }
 
-    function renderMetrics(metrics) {{
+    function renderMetrics(metrics) {
       const nodes = Object.entries(metrics);
-      if (nodes.length === 0) {{
+      if (nodes.length === 0) {
         grid.innerHTML = '<p style="color:#57606a">No nodes yet.</p>';
         return;
-      }}
-      grid.innerHTML = nodes.map(([name, m]) => {{
+      }
+      grid.innerHTML = nodes.map(([name, m]) => {
         const vKeys = m.violations ? Object.keys(m.violations) : [];
         const vSection = vKeys.length ? `
           <details class="violations">
-            <summary>Violations (${{vKeys.length}} type${{vKeys.length>1?'s':''}})</summary>
-            <pre>${{JSON.stringify(m.violations, null, 2)}}</pre>
+            <summary>Violations (${vKeys.length} type${vKeys.length>1?'s':''})</summary>
+            <pre>${JSON.stringify(m.violations, null, 2)}</pre>
           </details>` : '';
         return `<div class="card">
-          <div class="card-title" title="${{name}}">${{name}}</div>
+          <div class="card-title" title="${name}">${name}</div>
           <div class="counters">
             <div class="counter">
               <span class="counter-label">In</span>
-              <span class="counter-value">${{fmt(m['in'])}}</span>
+              <span class="counter-value">${fmt(m['in'])}</span>
             </div>
             <div class="counter">
               <span class="counter-label">Out</span>
-              <span class="counter-value">${{fmt(m['out'])}}</span>
+              <span class="counter-value">${fmt(m['out'])}</span>
             </div>
             <div class="counter">
               <span class="counter-label">Errors</span>
-              <span class="counter-value err">${{fmt(m['err'])}}</span>
+              <span class="counter-value err">${fmt(m['err'])}</span>
             </div>
             <div class="counter">
               <span class="counter-label">Warnings</span>
-              <span class="counter-value warn">${{fmt(m['warn'])}}</span>
+              <span class="counter-value warn">${fmt(m['warn'])}</span>
             </div>
           </div>
-          ${{vSection}}
+          ${vSection}
         </div>`;
-      }}).join('');
-    }}
+      }).join('');
+    }
 
     const es = new EventSource('/events');
 
-    es.addEventListener('open', () => {{
+    es.addEventListener('open', () => {
       statusEl.textContent = 'Connected';
       statusEl.className = 'connected';
-    }});
+    });
 
-    es.addEventListener('message', (e) => {{
-      try {{
+    es.addEventListener('message', (e) => {
+      try {
         const metrics = JSON.parse(e.data);
         renderMetrics(metrics);
         lastUpdate.textContent = 'Last update: ' + new Date().toLocaleTimeString();
-      }} catch(err) {{
+      } catch(err) {
         console.error('Parse error', err);
-      }}
-    }});
+      }
+    });
 
-    es.addEventListener('error', () => {{
+    es.addEventListener('error', () => {
       statusEl.textContent = 'Reconnecting\u2026';
       statusEl.className = 'error';
-    }});
+    });
   </script>
 </body>
 </html>
