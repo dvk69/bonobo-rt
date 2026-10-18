@@ -15,6 +15,7 @@ means that the api is not yet 1.0-proof.
     api/bonobo/nodes/streaming
     api/bonobo/nodes/quality
     api/bonobo/metrics
+    api/bonobo/dashboard
     api/bonobo/structs/graphs
     api/bonobo/util
     commands

@@ -2,22 +2,26 @@
 bonobo.nodes.streaming
 ======================
 
-Streaming source nodes for Bonobo ETL.
+Streaming source and sink nodes for Bonobo ETL.
 
 Currently provided:
 
 * :class:`FileTailReader` — source node that yields new lines appended to a
   file, similar to ``tail -F``.  Designed to run inside the standard
   ``ThreadPoolExecutorStrategy``; it terminates promptly when the graph stops.
+* :class:`FileAppendWriter` — sink node that appends each incoming row as a
+  JSON line to a file.  Thread-safe writes with flush; clean shutdown via
+  ``@ContextProcessor``.
 """
 
+import json
 import threading
 import time
 
 from bonobo.config import Configurable, ContextProcessor, Option
 from bonobo.util.objects import ValueHolder
 
-__all__ = ["FileTailReader"]
+__all__ = ["FileTailReader", "FileAppendWriter"]
 
 
 class FileTailReader(Configurable):
@@ -91,3 +95,70 @@ class FileTailReader(Configurable):
                     # No new data — sleep in short slices so we can react
                     # promptly to the stop signal.
                     stop_event.wait(timeout=self.poll_interval)
+
+
+class FileAppendWriter(Configurable):
+    """Sink node that appends each incoming row to *path* as a JSON line.
+
+    Each tuple passed to this node is serialised to JSON and written as a
+    single line (NDJSON / JSON Lines format).  Writes are protected by a
+    :class:`threading.Lock` so multiple worker threads can call the node
+    concurrently without interleaving partial writes.  The file handle is
+    flushed after every write so that readers (e.g. :class:`FileTailReader`)
+    see rows promptly.
+
+    **Shutdown**: the context-processor opens the file on entry and closes it
+    on teardown; no data is buffered in memory between rows.
+
+    Options
+    -------
+    path
+        Path to the output file.  **Required.**  The file is opened in append
+        mode (``"a"``), so existing content is preserved.
+    encoding
+        Text encoding passed to :func:`open`.  Default: ``"utf-8"``.
+
+    Example
+    -------
+    .. code-block:: python
+
+        import bonobo
+
+        graph = bonobo.Graph(
+            bonobo.FileTailReader("/tmp/input.log"),
+            bonobo.FileAppendWriter("/tmp/output.jsonl"),
+        )
+        bonobo.run(graph)
+    """
+
+    path = Option(str, positional=True, required=True)
+    encoding = Option(str, default="utf-8", required=False)
+
+    @ContextProcessor
+    def _file_handle(self, context):
+        """Open the output file and provide a ValueHolder wrapping (fh, lock)."""
+        lock = threading.Lock()
+        with open(self.path, "a", encoding=self.encoding) as fh:
+            yield ValueHolder((fh, lock))
+        # File is closed automatically when the context manager exits.
+
+    def __call__(self, _file_handle, *args):
+        """Append *args* as a JSON line to the output file.
+
+        The *_file_handle* argument is a :class:`ValueHolder` wrapping a
+        ``(file_handle, lock)`` pair, injected by the :class:`ContextProcessor`
+        above.  The actual row data follows as *\\*args*.
+        """
+        fh, lock = _file_handle.get()
+        # Serialise: a single-element tuple stays as a scalar for readability;
+        # multi-element tuples become JSON arrays.
+        if len(args) == 1:
+            payload = args[0]
+        else:
+            payload = list(args)
+
+        line = json.dumps(payload, default=str) + "\n"
+
+        with lock:
+            fh.write(line)
+            fh.flush()

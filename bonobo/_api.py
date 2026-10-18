@@ -149,6 +149,7 @@ api.register_group(
     CsvReader,
     CsvWriter,
     DataQualityCheck,
+    FileAppendWriter,
     FileReader,
     FileWriter,
     FileTailReader,

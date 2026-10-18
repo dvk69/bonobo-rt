@@ -1,0 +1,26 @@
+name: Keep Bonobo Dashboard Warm
+
+# Render free web services spin down after 15 minutes of inactivity.
+# This workflow pings /health every 10 minutes to keep the service awake.
+# Note: Render's own cron feature is paid-tier only — this GitHub Actions
+# schedule is the free alternative.
+
+on:
+  schedule:
+    # Every 10 minutes, 24 × 7. GitHub Actions minimum granularity is 5 min.
+    - cron: "*/10 * * * *"
+  # Allow a manual trigger from the Actions UI for testing.
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping /health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl health endpoint
+        env:
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://bonobo-dashboard.onrender.com' }}
+        run: |
+          echo "Pinging ${DASHBOARD_URL}/health …"
+          curl --silent --fail --max-time 30 "${DASHBOARD_URL}/health"
+          echo "Done."

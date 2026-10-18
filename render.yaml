@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: bonobo-dashboard
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -e ".[dev]"
+    startCommand: python -m bonobo.dashboard
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: PYTHONUNBUFFERED
+        value: "1"

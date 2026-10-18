@@ -33,6 +33,9 @@ dependencies = [
     "requests~=2.0",
     "stevedore>=5",
     "whistle~=1.0",
+    # Dashboard
+    "fastapi>=0.100",
+    "uvicorn[standard]>=0.24",
 ]
 
 [project.urls]
@@ -47,6 +50,7 @@ dev = [
     "coverage>=7",
     "sphinx>=7",
     "cookiecutter>=2",
+    "httpx>=0.25",  # required by FastAPI TestClient
 ]
 docker = ["bonobo-docker~=0.6.0a1"]
 jupyter = ["ipywidgets~=6.0", "jupyter~=1.0"]
@@ -74,7 +78,7 @@ exclude = ["ez_setup", "example", "test"]
 addopts = "--capture=no --cov=bonobo --cov-report html"
 
 [tool.coverage.run]
-omit = ["bonobo/examples/*", "bonobo/ext/*"]
+omit = ["bonobo/examples/*", "bonobo/ext/*", "bonobo/dashboard/__main__.py"]
 
 [tool.isort]
 multi_line_output = 5

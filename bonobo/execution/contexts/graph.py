@@ -120,14 +120,19 @@ class GraphExecutionContext(BaseGraphExecutionContext):
     reading each node's ``statistics`` dict.  It is a read-only view — it does
     not hold any lock, so a caller racing with live execution may see slightly
     stale counts, which is acceptable for observability purposes.
+
+    When a node is a :class:`~bonobo.nodes.quality.DataQualityCheck` instance,
+    :meth:`get_metrics` also merges its ``get_violation_counts()`` result into
+    the per-node dict under the key ``"violations"``.
     """
 
     def get_metrics(self) -> dict:
-        """Return per-node tuple-in / tuple-out / error counters.
+        """Return per-node tuple-in / tuple-out / error / violation counters.
 
         Returns a dict keyed by the node's ``__name__`` (falling back to its
         repr).  Each value is a dict with keys ``"in"``, ``"out"``, ``"err"``,
-        and ``"warn"``.
+        ``"warn"``, and (for :class:`~bonobo.nodes.quality.DataQualityCheck`
+        nodes) ``"violations"``.
 
         Example::
 
@@ -137,7 +142,12 @@ class GraphExecutionContext(BaseGraphExecutionContext):
             # extract  {'in': 0, 'out': 100, 'err': 0, 'warn': 0}
             # transform {'in': 100, 'out': 100, 'err': 0, 'warn': 0}
             # load     {'in': 100, 'out': 0,   'err': 0, 'warn': 0}
+            # checker  {'in': 100, 'out': 100, 'err': 0, 'warn': 0,
+            #            'violations': {'null_empty[0]': 3}}
         """
+        # Lazy import to avoid a circular dependency at module level.
+        from bonobo.nodes.quality import DataQualityCheck
+
         result = {}
         for node_ctx in self.nodes:
             name = node_ctx.__name__
@@ -147,7 +157,12 @@ class GraphExecutionContext(BaseGraphExecutionContext):
             while key in result:
                 key = f"{name}[{suffix}]"
                 suffix += 1
-            result[key] = dict(node_ctx.statistics)
+            node_metrics = dict(node_ctx.statistics)
+            # Merge DataQualityCheck violation counts when available.
+            raw_node = node_ctx.wrapped
+            if isinstance(raw_node, DataQualityCheck):
+                node_metrics["violations"] = raw_node.get_violation_counts()
+            result[key] = node_metrics
         return result
 
     def start(self, starter=None):
